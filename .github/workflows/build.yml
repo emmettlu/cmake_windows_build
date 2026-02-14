@@ -6,20 +6,15 @@ on:
 
 jobs:
   build:
+    runs-on: windows-2022
     env:
-      PROJECT_REPOSITORY: watchexec/watchexec
-      PROJECT_VERSION: v2.3.2
-      PROJECT_PATH: watchexec
-      PROJECT_BIN: watchexec
-    strategy:
-      matrix:
-        os: [ubuntu-24.04, windows-2022]
-
-    runs-on: ${{ matrix.os }}
+      PROJECT_REPOSITORY: Kitware/CMake
+      PROJECT_VERSION: v3.21.7
+      PROJECT_PATH: cmake
+      PROJECT_BIN: cmake
 
     steps:
       - name: Windows Config
-        if: matrix.os == 'Windows'
         shell: pwsh
         run: |
           git config --system core.longpaths true
@@ -35,15 +30,16 @@ jobs:
           echo "Removed link.exe in git"
 
       - name: Setup MSVC
-        if: matrix.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
         with:
           toolset: 14.29
           arch: x64
           sdk: 10.0.19041.0
 
-      - name: Checkout self
-        uses: actions/checkout@v6
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: "3.19.x"
 
       - name: Checkout ${{ env.PROJECT_PATH }}
         uses: actions/checkout@v6
@@ -52,20 +48,15 @@ jobs:
           ref: refs/tags/${{ env.PROJECT_VERSION }}
           path: ${{ env.PROJECT_PATH }}
 
-      - name: Copy config file
-        shell: bash
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: |
-          mkdir -p .cargo
-          cp -f ../.cargo/config.toml .cargo
-
       - name: Build
-        shell: bash
+        shell: pwsh
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          rm -f Cargo.lock
-          cargo update
-          cargo b -r
+          cmake -B build/release -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release `
+          -DCMAKE_CXX_FLAGS="/arch:AVX2 /MD /MP /Oi /Os /Gy /GL /Gw /fp:fast /GR- /GS- /DNDEBUG" `
+          -DCMAKE_EXE_LINKER_FLAGS="/LTCG /MANIFEST:NO /MERGE:_RDATA=.rdata /OPT:REF /OPT:ICF" `
+
+          cmake --build build/release
 
       - name: Archive
         uses: actions/upload-artifact@v5
