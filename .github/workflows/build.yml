@@ -39,7 +39,7 @@ jobs:
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2
         with:
-          cmake-version: "3.19.x"
+          cmake-version: "3.21.x"
 
       - name: Checkout ${{ env.PROJECT_PATH }}
         uses: actions/checkout@v6
