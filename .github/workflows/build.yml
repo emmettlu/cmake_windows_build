@@ -29,12 +29,12 @@ jobs:
           }
           echo "Removed link.exe in git"
 
-      # - name: Setup MSVC
-      #   uses: ilammy/msvc-dev-cmd@v1
-      #   with:
-      #     toolset: 14.29
-      #     arch: x64
-      #     sdk: 10.0.19041.0
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: 14.29
+          arch: x64
+          sdk: 10.0.19041.0
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2
