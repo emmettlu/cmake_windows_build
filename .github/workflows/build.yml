@@ -52,10 +52,11 @@ jobs:
         shell: pwsh
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          cmake -B build/release -G "Visual Studio 16 2019" `
-          -D CMAKE_BUILD_TYPE=Release `
-          -A x64 `
+          cmake -B build/release `
+          -G "NMake Makefiles" `
           -T v142 `
+          -A x64 `
+          -D CMAKE_BUILD_TYPE=Release `
           -DCMAKE_CXX_FLAGS="/arch:AVX2 /MD /MP /Oi /Os /Gy /GL /Gw /fp:fast /GR- /GS- /DNDEBUG" `
           -DCMAKE_EXE_LINKER_FLAGS="/LTCG /MANIFEST:NO /MERGE:_RDATA=.rdata /OPT:REF /OPT:ICF"
 
