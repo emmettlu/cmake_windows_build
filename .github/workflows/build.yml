@@ -29,17 +29,17 @@ jobs:
           }
           echo "Removed link.exe in git"
 
-      - name: Setup MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          toolset: 14.29
-          arch: x64
-          sdk: 10.0.19041.0
+      # - name: Setup MSVC
+      #   uses: ilammy/msvc-dev-cmd@v1
+      #   with:
+      #     toolset: 14.29
+      #     arch: x64
+      #     sdk: 10.0.19041.0
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2
         with:
-          cmake-version: "3.21.x"
+          cmake-version: "3.19.x"
 
       - name: Checkout ${{ env.PROJECT_PATH }}
         uses: actions/checkout@v6
@@ -52,9 +52,12 @@ jobs:
         shell: pwsh
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          cmake -B build/release -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release `
+          cmake -B build/release -G "Visual Studio 16 2019" `
+          -D CMAKE_BUILD_TYPE=Release `
+          -A x64 `
+          -T v142 `
           -DCMAKE_CXX_FLAGS="/arch:AVX2 /MD /MP /Oi /Os /Gy /GL /Gw /fp:fast /GR- /GS- /DNDEBUG" `
-          -DCMAKE_EXE_LINKER_FLAGS="/LTCG /MANIFEST:NO /MERGE:_RDATA=.rdata /OPT:REF /OPT:ICF" `
+          -DCMAKE_EXE_LINKER_FLAGS="/LTCG /MANIFEST:NO /MERGE:_RDATA=.rdata /OPT:REF /OPT:ICF"
 
           cmake --build build/release
 
